@@ -1,22 +1,53 @@
 {
   "name": "koishi-plugin-typst-to-image-service",
-  "description": "Convert Typst to image using a non-Puppeteer solution.",
-  "version": "0.0.1",
+  "description": "convert typst to image using a non-puppeteer solution.",
+  "version": "1.0.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
+  "scripts": {
+    "build": "cd ../../ && yarn build typst-to-image-service",
+    "pub": "cd ../../ && yarn pub typst-to-image-service",
+    "fastPub": "cd ../../ && yarn bump -3 typst-to-image-service && yarn build typst-to-image-service && yarn pub typst-to-image-service"
+  },
   "files": [
     "lib",
     "dist"
   ],
+  "contributors": [
+    "pgnqukezrdxmhjso"
+  ],
+  "homepage": "https://github.com/pgnqukezrdxmhjso/koishi-plugin-typst-to-image-service",
+  "bugs": {
+    "url": "https://github.com/pgnqukezrdxmhjso/koishi-plugin-typst-to-image-service/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pgnqukezrdxmhjso/koishi-plugin-typst-to-image-service.git"
+  },
   "license": "MIT",
-  "scripts": {},
   "keywords": [
     "chatbot",
     "koishi",
-    "plugin"
+    "plugin",
+    "typst to image"
   ],
-  "devDependencies": {},
   "peerDependencies": {
     "koishi": "^4.18.10"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@myriaddreamin/typst-ts-node-compiler": "^0.7.0-rc2",
+    "koishi-plugin-to-image-service": "^0.1.5"
+  },
+  "koishi": {
+    "service": {
+      "required": [
+        "node",
+        "toImageService"
+      ],
+      "implements": [
+        "typstToImageService"
+      ]
+    }
   }
 }
