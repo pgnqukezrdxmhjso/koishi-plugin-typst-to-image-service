@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Context, Schema, Service } from "koishi";
-import type { Font, FontFormat } from "koishi-plugin-to-image-service";
+import type { FontManagement } from "koishi-plugin-to-image-service";
 // noinspection ES6UnusedImports
 import {} from "koishi-plugin-w-node";
 import type Typst from "@myriaddreamin/typst-ts-node-compiler";
@@ -9,6 +9,7 @@ import type {
   NodeCompiler,
   NodeAddFontBlobs,
 } from "@myriaddreamin/typst-ts-node-compiler";
+import { installPackage } from "./util";
 
 const serviceName = "typstToImageService";
 
@@ -20,10 +21,10 @@ declare module "koishi" {
 
 class TypstToImageService extends Service {
   readonly typstName = "@myriaddreamin/typst-ts-node-compiler";
-  readonly fontFormats: FontFormat[] = ["ttf", "otf"];
+  readonly fontFormats: FontManagement.FontFormat[] = ["ttf", "otf"];
 
   typst: typeof Typst;
-  private lastFonts: Font[] = [];
+  private lastFonts: FontManagement.Font[] = [];
   private compiler: NodeCompiler = null;
 
   constructor(
@@ -34,13 +35,14 @@ class TypstToImageService extends Service {
   }
 
   async start() {
-    this.typst = await this._ctx.node.safeImport(this.typstName);
+    await installPackage(this._ctx, this.typstName);
+    this.typst = await this._ctx.node.import(this.typstName);
   }
 
   getCompiler() {
-    const fonts = this._ctx.toImageService.fontManagement.getFonts(
-      this.fontFormats,
-    );
+    const fonts = this._ctx.toImageService.fontManagement.getFonts({
+      formats: this.fontFormats,
+    });
     if (
       !this.compiler ||
       fonts.length != this.lastFonts.length ||
@@ -74,7 +76,10 @@ class TypstToImageService extends Service {
 
   async toPng(content: string, inputs?: Record<string, string>) {
     const svg = this.toSvg(content, inputs);
-    return this._ctx.toImageService.svgToImage.resvg(svg);
+    return this._ctx.toImageService.sharpRenderer.render({
+      source: Buffer.from(svg),
+      format: "png",
+    });
   }
 }
 

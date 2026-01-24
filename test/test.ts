@@ -15,23 +15,34 @@ import TypstToImageService from "../src";
     option() {
       return command;
     },
-  };
-  const node = new WNode(
-    {
-      command() {
-        return command;
-      },
-    } as any,
-    {
-      packagePath: path.resolve(os.tmpdir(), "w-node"),
-      registry: "https://registry.npmmirror.com/",
+    alias() {
+      return command;
     },
-  );
+  };
+  const ctx = {
+    command() {
+      return command;
+    },
+    i18n: {
+      define: (a, b) => b,
+    },
+    on: () => 0,
+    logger: {
+      error: console.error,
+    },
+  };
+  const node = new WNode(ctx as any, {
+    packagePath: path.resolve(__dirname, "../../../cache/node"),
+    registry: "https://registry.npmmirror.com/",
+  });
   await node.start();
 
-  const toImageService = new ToImageService({ node } as any, {});
+  const toImageService = new ToImageService({ ...ctx, node } as any, {});
   await toImageService.start();
-  const fontCascadiaMono = new FontCascadiaMono({ toImageService } as any, {});
+  const fontCascadiaMono = new FontCascadiaMono(
+    { ...ctx, toImageService } as any,
+    {},
+  );
   await fontCascadiaMono["start"]();
 
   const typstToImageService = new TypstToImageService(
@@ -42,6 +53,11 @@ import TypstToImageService from "../src";
 
   const typ = await fs.readFile("./test.typ", "utf8");
 
+  console.time("typst");
+  const svg = typstToImageService.toSvg(typ);
+  console.timeEnd("typst");
+  await fs.writeFile("./test.svg", svg, "utf8");
+
   console.time("typst to png");
   await fs.writeFile(
     "./test.png",
@@ -50,27 +66,20 @@ import TypstToImageService from "../src";
   );
   console.timeEnd("typst to png");
 
-  console.time("typst");
-  const svg = typstToImageService.toSvg(typ);
-  console.timeEnd("typst");
-  await fs.writeFile("./test.svg", svg, "utf8");
-
   console.time("resvg");
   await fs.writeFile(
     "./test-resvg.png",
-    await toImageService.svgToImage.resvg(svg),
+    await toImageService.resvgRenderer.render(svg),
   );
   console.timeEnd("resvg");
 
-  console.time("vips");
+  console.time("sharp");
   await fs.writeFile(
-    "./test-vips.png",
-    await toImageService.svgToImage.vips(svg, {
+    "./test-sharp.png",
+    await toImageService.sharpRenderer.render({
+      source: Buffer.from(svg),
       format: "png",
-      options: {
-        compression: 5,
-      },
     }),
   );
-  console.timeEnd("vips");
+  console.timeEnd("sharp");
 })();
