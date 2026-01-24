@@ -9,7 +9,7 @@ import type {
   NodeCompiler,
   NodeAddFontBlobs,
 } from "@myriaddreamin/typst-ts-node-compiler";
-import { installPackage } from "./util";
+import { importPackage } from "./util";
 
 const serviceName = "typstToImageService";
 
@@ -35,8 +35,7 @@ class TypstToImageService extends Service {
   }
 
   async start() {
-    await installPackage(this._ctx, this.typstName);
-    this.typst = await this._ctx.node.import(this.typstName);
+    this.typst = await importPackage(this._ctx, this.typstName);
   }
 
   getCompiler() {

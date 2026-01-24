@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import os from "node:os";
 
 import ToImageService from "koishi-plugin-to-image-service";
 import WNode from "koishi-plugin-w-node";
