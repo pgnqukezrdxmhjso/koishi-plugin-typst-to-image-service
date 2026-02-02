@@ -1,13 +1,14 @@
 {
   "name": "koishi-plugin-typst-to-image-service",
   "description": "convert typst to image using a non-puppeteer solution.",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
     "build": "cd ../../ && yarn build typst-to-image-service",
     "pub": "cd ../../ && yarn pub typst-to-image-service",
-    "fastPub": "cd ../../ && yarn bump -3 typst-to-image-service && yarn build typst-to-image-service && yarn pub typst-to-image-service"
+    "fastPub": "cd ../../ && yarn bump -3 typst-to-image-service && yarn build typst-to-image-service && yarn pub typst-to-image-service",
+    "up": "npx npm-check -u --no-color"
   },
   "files": [
     "lib",
@@ -36,7 +37,8 @@
   },
   "devDependencies": {
     "@myriaddreamin/typst-ts-node-compiler": "^0.7.0-rc2",
-    "koishi-plugin-to-image-service": "^1.0.2"
+    "koishi-plugin-to-image-service": "^1.6.2",
+    "koishi-plugin-w-node": "^1.0.1"
   },
   "koishi": {
     "service": {
@@ -48,5 +50,8 @@
         "typstToImageService"
       ]
     }
+  },
+  "dependencies": {
+    "koishi-plugin-rzgtboeyndxsklmq-commons": "workspace:^"
   }
 }
